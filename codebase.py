@@ -21,5 +21,9 @@ soma_frutas.to_csv('soma_frutas.csv', sep=';', decimal=',')
 print(df)
 print(soma_frutas)
 
-#Texto=pd.read_csv('./aulal.csv')
+plt.bar(listafruit,soma_frutas)
+plt.xlabel('frutas')
+plt.ylabel('produção')
+plt.show()
 
+plt.savefig('graphics.pdf')
