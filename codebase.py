@@ -1,30 +1,38 @@
-##hackear_santander = true
-##hackear_governo = em progresso...
-##hackear_tigurinho = 99% completo
-##import itertools
-import numpy as hp
-import seaborn as sns
-##import random
 from itertools import product
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-listacity = ['Itapetinigga', 'Tatuí', 'São Miguel Arcanjo', 'Capela do Alto', 'Sorocaba', 'Buri'] 
-listafruit = ['Banana', 'Maçã', 'Pera', 'Uva', 'Morango']
-#listacombinada = listacity + listafruit
-#print(listacombinada)
+import seaborn as sns
+lista_cidades = ["Itapetininga", "Tatui", "São Miguel Arcanjo", "Capela do Alto", "Sorocaba", "Buri"]
+lista_frutas = ["Banana", "Maçã", "Uva", "Pera", "Morango"]
+np.random.seed (42)
 
-df = pd.DataFrame (product (listacity, listafruit), columns = ['cidades', 'frutas']) 
-hp.random.seed(42)
-df ['produção' ]=hp.random.randint(0, 1000, size=len (df)) 
-soma_frutas=df.groupby('frutas')['produção' ].sum() 
-soma_frutas.to_csv('soma_frutas.csv', sep=';', decimal=',')
+df = pd.DataFrame(product(lista_cidades, lista_frutas), columns = ["lista_cidades","lista_frutas",])
+df["producao"] = np.random.randint (0, 1000, size=len(df))
 
-print(df)
-print(soma_frutas)
+soma_frutas = df.groupby("lista_frutas").producao.sum()
 
-plt.bar(listafruit,soma_frutas)
-plt.xlabel('frutas')
-plt.ylabel('produção')
+soma_frutas.to_csv("soma_frutas.csv", sep = ";", decimal = ",")
+
+g_frutas_conjunto = plt.bar (soma_frutas.index, soma_frutas)
+
+plt.savefig('soma_frutas.pdf')
+
+morangos = df[df.lista_frutas == "Morango"]
+_ = plt.pie(morangos.producao, labels=morangos.lista_cidades, autopct="%.0f%%")
 plt.show()
 
-plt.savefig('graphics.pdf')
+sorocaba = df[df.lista_cidades == "Sorocaba"]
+macas_sorocaba = sorocaba[sorocaba.lista_frutas == "Maçã"].producao
+chance_maca_sorocaba_teorica = macas_sorocaba / sorocaba.producao.sum ()
+
+
+repeticoes = [10, 100, 1000, 10000, 100000, 1000000]
+frutas_pool = sorocaba.lista_frutas.repeat (sorocaba.producao).reset_index(drop=True)
+chance_maca_sorocaba_sim = []
+for n in repeticoes:
+    np.random.seed(42)
+    indices = np.random.randint(0, len(frutas_pool), size = n)
+    caixas_selecionadas = frutas_pool.iloc[indices]  
+    macas_selecionadas = (caixas_selecionadas == "Maçã").sum()
+    chance_maca_sorocaba_sim.append(macas_selecionadas/n)
